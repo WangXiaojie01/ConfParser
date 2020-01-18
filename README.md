@@ -1,0 +1,2 @@
+# ConfParser
+对ConfigParser做了封装的一个从配置文件获取配置的工具
