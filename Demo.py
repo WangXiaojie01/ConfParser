@@ -23,5 +23,5 @@ if __name__ == "__main__":
     print(RecvTimeout)
 
     #直接调用接口获取参数
-    RecvTimeout = GetValueWithDefault(confFile, "socket", "RecvTimeout1", 15)
+    RecvTimeout = getValueWithDefault(confFile, "socket", "RecvTimeout1", 15)
     print(RecvTimeout)

@@ -7,53 +7,57 @@ author: wangxiaojie
 '''
 
 import os,sys
-import ConfigParser
+import configparser
+import logging
 
 __all__ = [
-    "GetValueFromConf",
-    "GetValueWithDefault",
+    "getValueFromConf",
+    "getValueWithDefault",
     "ConfParser"
     ]
 
-def GetValueFromConf(confFile, option, key):
-    if not confFile:
-        print("None of confFile")
-        return False, "None of confFile", None 
+def getValueFromConf(confFileName, option, key):
+    if not confFileName:
+        print("confFileName is None")
+        return False, "confFileName is None", None 
     if not option:
-        print("None of option")
-        return False, "None of option", None 
+        print("option is None")
+        return False, "option is None", None 
     if not key:
-        print("None of key")
-        return False, "None of key", None 
-    if not os.path.isfile(confFile):
-        print("%s not found" % confFile)
-        return False, "%s not found" % confFile, None
-        
-    config = ConfigParser.ConfigParser()
-    config.read(confFile)
-    try:
+        print("key is None")
+        return False, "key is None", None 
+    if not os.path.isfile(confFileName):
+        print("%s is not a file" % confFileName)
+        return False, "%s is not a file" % confFileName, None
+    try:   
+        config = configparser.ConfigParser()
+        config.read(confFileName)
         result = config.get(option, key)
         return True, "success", result
     except Exception as e:
-        print("None of %s.%s" % (option, key))
-        return False, "None of %s.%s" % (option, key), None
+        print("get value from %s error, error is %s" % (confFileName, e))
+        return False, "get value from %s error, error is %s" % (confFileName, e), None
 
-def GetValueWithDefault(confFile, option, key, default):
-    error, log, value = GetValueFromConf(confFile, option, key)
-    if not value:
-        value = default
+def getValueWithDefault(confFileName, option, key, default):
+    result, log, value = getValueFromConf(confFileName, option, key)
+    if not result:
+        return default
     return value
 
 class ConfParser(object):
     def __init__(self, confFile):
-        self.config = ConfigParser.ConfigParser()
-        self.config.read(confFile)
+        try:
+            self.config = configparser.ConfigParser()
+            self.config.read(confFile)
+        except Exception as e:
+            print("init ConfParser error, error is %s" % e)
 
     def getValue(self, option, key):
         try:
             result = self.config.get(option, key)
             return result
         except Exception as e:
+            print("getValue error, error is %s" % e)
             return None
     
     def getValueWithDefault(self, option, key, default):
@@ -64,17 +68,18 @@ class ConfParser(object):
             return result
 
     def getIntWithDefault(self, option, key, default):
-        result = self.getValue(option, key)
-        if not result:
-            return default
-        else:
-            return int(result)
-    
+        tempStr = self.getValueWithDefault(option, key, default)
+        try:
+            result = int(float(tempStr))
+            return result
+        except Exception as e:
+            print("int(float(%s)) error, error msg is %s" % (tempStr, e))
+            return None
 
 if __name__ == "__main__":
     confFile = os.path.abspath(os.path.join(__file__, "../../etc/init.conf"))
     initConfParser = ConfParser(confFile)
     RecvTimeout = initConfParser.getValueWithDefault("socket", "RecvTimeout", 10)
     print(RecvTimeout)
-    RecvTimeout = GetValueWithDefault(confFile, "socket", "RecvTimeout1", 15)
+    RecvTimeout = getValueWithDefault(confFile, "socket", "RecvTimeout1", 15)
     print(RecvTimeout)
