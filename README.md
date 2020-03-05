@@ -1,8 +1,9 @@
 # ConfParser
-对ConfigParser做了封装的一个从配置文件获取配置的工具
+对configparser做了封装的一个从配置文件获取配置的工具
 
 ###使用范例
-```
+
+```text
 from ConfParser import *
 
 if __name__ == "__main__":
@@ -15,18 +16,18 @@ if __name__ == "__main__":
     print(RecvTimeout)
 
     #直接调用接口获取参数
-    RecvTimeout = GetValueWithDefault(confFile, "socket", "RecvTimeout1", 15)
+    RecvTimeout = getValueWithDefault(confFile, "socket", "RecvTimeout1", 15)
     print(RecvTimeout)
 ```
 
 ###接口说明
-GetValueFromConf(confFile, option, key)
+getValueFromConf(confFile, option, key)
 &nbsp;&nbsp;&nbsp; confFile配置文件
 &nbsp;&nbsp;&nbsp; option参数选项
 &nbsp;&nbsp;&nbsp; key参数键
 如果获取不到，会返回None
 
-GetValueWithDefault(confFile, option, key, default)
+getValueWithDefault(confFile, option, key, default)
 &nbsp;&nbsp;&nbsp; confFile配置文件
 &nbsp;&nbsp;&nbsp; option参数选项
 &nbsp;&nbsp;&nbsp; key参数键
