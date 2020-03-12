@@ -13,21 +13,24 @@ import logging
 __all__ = [
     "getValueFromConf",
     "getValueWithDefault",
-    "ConfParser"
+    "ConfParser",
+    "confLogger"
     ]
+
+confLogger = logging.Logger("ConfParser")
 
 def getValueFromConf(confFileName, option, key):
     if not confFileName:
-        print("confFileName is None")
+        confLogger.error("confFileName is None")
         return False, "confFileName is None", None 
     if not option:
-        print("option is None")
+        confLogger.error("option is None")
         return False, "option is None", None 
     if not key:
-        print("key is None")
+        confLogger.error("key is None")
         return False, "key is None", None 
     if not os.path.isfile(confFileName):
-        print("%s is not a file" % confFileName)
+        confLogger.error("%s is not a file" % confFileName)
         return False, "%s is not a file" % confFileName, None
     try:   
         config = configparser.ConfigParser()
@@ -35,7 +38,7 @@ def getValueFromConf(confFileName, option, key):
         result = config.get(option, key)
         return True, "success", result
     except Exception as e:
-        print("get value from %s error, error is %s" % (confFileName, e))
+        confLogger.error("get value from %s error, error is %s" % (confFileName, e))
         return False, "get value from %s error, error is %s" % (confFileName, e), None
 
 def getValueWithDefault(confFileName, option, key, default):
@@ -46,18 +49,21 @@ def getValueWithDefault(confFileName, option, key, default):
 
 class ConfParser(object):
     def __init__(self, confFile):
+        if not os.path.isfile(confFile):
+            confLogger.error("%s is not a file" % confFile)
+            return
         try:
             self.config = configparser.ConfigParser()
             self.config.read(confFile)
         except Exception as e:
-            print("init ConfParser error, error is %s" % e)
+            confLogger.error("init ConfParser error, error is %s" % e)
 
     def getValue(self, option, key):
         try:
             result = self.config.get(option, key)
             return result
         except Exception as e:
-            print("getValue error, error is %s" % e)
+            confLogger.error("getValue error, error is %s" % e)
             return None
     
     def getValueWithDefault(self, option, key, default):
@@ -73,7 +79,7 @@ class ConfParser(object):
             result = int(float(tempStr))
             return result
         except Exception as e:
-            print("int(float(%s)) error, error msg is %s" % (tempStr, e))
+            confLogger.error("int(float(%s)) error, error msg is %s" % (tempStr, e))
             return None
 
 if __name__ == "__main__":
